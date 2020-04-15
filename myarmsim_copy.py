@@ -70,7 +70,7 @@ class MyArmSim(ArmAnimatorApp):
         return
 
       if evt.key == K_2:
-        print("\nset corner 1")
+        print("\nset corner 2")
         # x_pos has not been set
         if not self.corner_2:
           self.corner_2.append(self.arm[0].get_goal())
@@ -87,7 +87,7 @@ class MyArmSim(ArmAnimatorApp):
         return
       
       if evt.key == K_3:
-        print("\nset corner 1")
+        print("\nset corner 3")
         # x_pos has not been set
         if not self.corner_3:
           self.corner_3.append(self.arm[0].get_goal())
