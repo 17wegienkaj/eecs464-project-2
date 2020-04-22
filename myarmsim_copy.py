@@ -6,12 +6,13 @@ Created on Wed Apr  1 14:23:10 2020
 @author: shrevzen
 """
 
-from numpy import asarray, array, dot, arctan, cos, arccos, sin, degrees
+from numpy import asarray, array, dot, arctan, cos, arccos, sin, degrees, sqrt, radians
 from joy.plans import Plan
 from joy.decl import *
 from p2sim import ArmAnimatorApp
 from vis3d import FourViewPlot, xyzCube, iCube, iFace, plotVE
 import time
+
 
 class MyArmSim(ArmAnimatorApp):
     def __init__(self,Tp2ws):
@@ -162,9 +163,9 @@ class MyArmSim(ArmAnimatorApp):
 
       # append points and begin drawing square
       if evt.key == K_5:
-        self.append_point([8,1,0])
-        self.append_point([8,5,0])
-        self.append_point([8,10,0])
+        self.append_point([0,0,0])
+        #self.append_point([4,5,0])
+        # self.append_point([8,10,0])
         
         return
       return ArmAnimatorApp.onEvent(self,evt)
@@ -182,6 +183,7 @@ class MovePlan(Plan):
     
     print("\nDrawing square")
     print(self.square)
+
     for target in self.square:
       ###
       ### move all motor joints
@@ -209,11 +211,16 @@ class MovePlan(Plan):
       ###
 
       # find third motor joint
+      # adjusted x-value after turn
+      x_val = sqrt(target[0]**2 + target[1]**2) - 5
 
-      angle_3 = 100 * degrees(-arccos((target[0]**2 + target[2]**2 - self.seg_2**2 - self.seg_3**2) / (2 * self.seg_2 * self.seg_3)))
+      print("ELLO: {}".format(x_val))
+      angle_3 = arccos( (x_val**2 + target[2]**2 - self.seg_2**2 - self.seg_3**2) / (2 * self.seg_2 * self.seg_3))
 
       # find second motor joint 
-      angle_2 = 100 * degrees(arctan(target[2]/target[0]) - arctan((self.seg_3 * sin(angle_3) / (self.seg_2 + self.seg_3 * cos(angle_3)))))
+      angle_2 = 100 * degrees( arctan( target[2]/x_val) - arctan((self.seg_3 * sin(angle_3) / (self.seg_2 + self.seg_3 * cos(angle_3) ))))
+
+      angle_3 = 100 * degrees(angle_3)
 
       # prevent looping
       #if angle_2 < -18000:
