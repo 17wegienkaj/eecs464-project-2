@@ -22,7 +22,7 @@ class MyArmSim(ArmAnimatorApp):
       Tws2w = asarray([
            [1,0,0,  0],
            [0,1,0, -5],
-           [0,0,1,-12],
+           [0,0,1,-10],
            [0,0,0,  1]
       ]) 
       ###
@@ -64,6 +64,7 @@ class MyArmSim(ArmAnimatorApp):
       ###
       ### TEAM CODE GOES HERE
       ###
+      seg_1 = 5 # segment 1 length
       seg_2 = 5 # segment 2 length 
       seg_3 = 4 # segment 3 length 
       self.square = []
@@ -76,7 +77,7 @@ class MyArmSim(ArmAnimatorApp):
       self.corners.append(self.corner_2)
       self.corners.append(self.corner_3)
       self.corners.append(self.corner_4)
-      self.movePlan = MovePlan(app, self.arm, seg_2, seg_3, self.square)
+      self.movePlan = MovePlan(app, self.arm, seg_1, seg_2, seg_3, self.square)
       
       
     def onEvent(self,evt):
@@ -163,18 +164,19 @@ class MyArmSim(ArmAnimatorApp):
 
       # append points and begin drawing square
       if evt.key == K_5:
-        self.append_point([0,0,0])
-        #self.append_point([4,5,0])
+        self.append_point([4,0,0])
+        self.append_point([4,5,0])
         # self.append_point([8,10,0])
         
         return
       return ArmAnimatorApp.onEvent(self,evt)
 
 class MovePlan(Plan):
-  def __init__(self, app, arm, seg_2, seg_3, square):
+  def __init__(self, app, arm, seg_1, seg_2, seg_3, square):
     Plan.__init__(self, app)
     self.arm = arm
     self.corners = []
+    self.seg_1 = seg_1
     self.seg_2 = seg_2
     self.seg_3 = seg_3
     self.square = square
@@ -212,11 +214,12 @@ class MovePlan(Plan):
 
       # find third motor joint
       # adjusted x-value after turn
-      x_val = sqrt(target[0]**2 + target[1]**2) - 5
+      x_val = sqrt(target[0]**2 + target[1]**2) - self.seg_1
+    
 
       print("ELLO: {}".format(x_val))
       angle_3 = arccos( (x_val**2 + target[2]**2 - self.seg_2**2 - self.seg_3**2) / (2 * self.seg_2 * self.seg_3))
-
+      print("ELLO angle: {}".format(angle_3))
       # find second motor joint 
       angle_2 = 100 * degrees( arctan( target[2]/x_val) - arctan((self.seg_3 * sin(angle_3) / (self.seg_2 + self.seg_3 * cos(angle_3) ))))
 
